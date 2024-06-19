@@ -17,4 +17,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(HomeController::class)->group(function(){
 	Route::get('/', 'index')->name('index');
+	Route::get('/how-it-works', 'howItWorks')->name('how.it.works');
 });

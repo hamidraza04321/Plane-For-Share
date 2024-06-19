@@ -13,4 +13,12 @@ class HomeController extends Controller
     {
     	return view('index');
     }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function howItWorks()
+    {
+    	return view('how-it-works');
+    }
 }
