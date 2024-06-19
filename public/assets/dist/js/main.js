@@ -4,11 +4,20 @@ $(document).ready(function() {
 	// --------------- APPLICATION BASE URL ------------ //
 	var baseUrl = $('#base-url').val();
 
+    // --------------- AJAX CSRF META ------------ //
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
 	// --------------- ON CHANGE TEXT ----------------- //
 	$(document).on('keyup', '#text', function(e) {
 		e.preventDefault();
 		
 		var val = $(this).val();
+
+        $('#btn-save-text').text('Save').attr('action', 'save');
 
 		if (val != '') {
 			$('#btn-save-text').removeAttr('disabled');
@@ -24,7 +33,7 @@ $(document).ready(function() {
 		e.preventDefault();
 		$('#text').val('');
 		$(this).addClass('d-none');
-		$('#btn-save-text').attr('disabled', '');
+		$('#btn-save-text').attr('action', 'save').trigger('click');
 	});
 
 	// --------------- ON CLICK BTN SAVE TEXT --------------- //
@@ -32,8 +41,37 @@ $(document).ready(function() {
 		e.preventDefault();
 		
 		var self = $(this);
-			self_html = self.html();
+            url = self.data('url');
+			action = self.attr('action');
+            text = $('#text').val();
 
+        if (action == 'copy') {
+            $('#text').select();
+            document.execCommand('copy');
+            return;
+        }
+
+        // Button Loading
+        self.attr('disabled', '').html('Saving...');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { text: text },
+            success: function(response) {
+                if (text == '') {
+                    self.attr({
+                        disabled: '',
+                        action: 'save'
+                    }).html('Save');
+                } else {
+                    self.removeAttr('disabled').html('Copy').attr('action', 'copy');
+                }
+            },
+            error: function() {
+                alert('Something went wrong !');
+            }
+        });
 	});
 
 	// -------------- ON CLICK BROWSE FILE LINK ------------- //

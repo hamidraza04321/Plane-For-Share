@@ -12,11 +12,11 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="1">
-                <textarea id="text" name="text" class="form-control text-input" placeholder="Type Something..."></textarea>
+                <textarea id="text" name="text" class="form-control text-input" placeholder="Type Something...">{{ $text }}</textarea>
                 <div class="row btn-row">
                     <div class="col-12">
-                        <button id="btn-clear" class="btn-clear d-none">Clear</button>
-                        <button id="btn-save-text" disabled class="btn-save-text">Save</button>
+                        <button id="btn-clear" class="btn-clear {{ (!$text) ? 'd-none' : '' }}">Clear</button>
+                        <button id="btn-save-text" action="{{ ($text) ? 'copy' : 'save' }}" @disabled(!$text) data-url="{{ route('save.text') }}" class="btn-save-text">{{ ($text) ? 'Copy' : 'Save' }}</button>
                     </div>
                 </div>
             </div>
