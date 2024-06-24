@@ -19,4 +19,8 @@ Route::controller(HomeController::class)->group(function(){
 	Route::get('/', 'index')->name('index');
 	Route::get('/how-it-works', 'howItWorks')->name('how.it.works');
 	Route::post('/save-text', 'saveText')->name('save.text');
+	Route::get('/login', 'login')->name('login');
+	Route::get('/register', 'register')->name('register');
+	Route::post('/authenticate', 'authenticate')->name('authenticate');
+	Route::post('/signup', 'signup')->name('signup');
 });

@@ -5,9 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=navigation">
     <meta name="csrf-token" id="csrf-token" content="{{ csrf_token() }}">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="{{ url('assets/plugins/toastr/css/toastr.min.css') }}">
     <!-- Fontawesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ url('assets/dist/css/style.css') }}">
@@ -35,7 +36,11 @@
                             <a href="{{ route('how.it.works') }}" @class([ 'active' => Route::currentRouteName() == 'how.it.works'])>How it works</a>
                         </li>
                         <li>
-                            <a href="#">Login / Register</a>
+                            @auth
+                                <a href="#">{{ auth()->user()->name }}</a>
+                            @else
+                                <a href="{{ route('login') }}" @class([ 'active' => in_array(Route::currentRouteName(), [ 'login', 'register' ])])>Login / Register</a>
+                            @endauth
                         </li>
                     </ul>
                 </nav>
@@ -59,6 +64,7 @@
     <!-- jQuery -->
     <script src="{{ url('assets/plugins/jQuery/jQuery-3.7.1.min.js') }}"></script>
     <script src="{{ url('assets/plugins/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url('assets/plugins/toastr/js/toastr.min.js') }}"></script>
     <script src="{{ url('assets/dist/js/main.js') }}"></script>
     @yield('scripts')
 </body>
