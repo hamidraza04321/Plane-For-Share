@@ -23,4 +23,5 @@ Route::controller(HomeController::class)->group(function(){
 	Route::get('/register', 'register')->name('register');
 	Route::post('/authenticate', 'authenticate')->name('authenticate');
 	Route::post('/signup', 'signup')->name('signup');
+	Route::post('/upload', 'upload')->name('file.upload');
 });

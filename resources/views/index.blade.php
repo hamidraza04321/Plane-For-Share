@@ -21,12 +21,24 @@
                 </div>
             </div>
             <div class="tab-pane" id="2">
-                <div class="drag-drop-wrap no-file">
-                    <div class="no-file-upload-wrap">
+                <div @class([ 'drag-drop-wrap', 'no-file' => $files->isEmpty() ])>
+                    <div @class([ 'no-file-upload-wrap', 'd-none' => !$files->isEmpty() ])>
                         <h4>Drag and drop any files up to 2 files, 5Mbs each or <a href="#" id="browse">Browse</a><br></h4>
                         <h4><a href="#">Upgrade</a> to get more space</h4>
                     </div>
-                    <div class="files-wrap d-none">
+                    <div @class([ 'files-wrap', 'd-none' => $files->isEmpty() ])>
+                        @foreach($files as $file)
+                            <div class="file">
+                                <div class="preview">
+                                    @if(@getimagesize(url('/uploads/' . $file->name)) !== false)
+                                        <img src="{{ url('/uploads/' . $file->name) }}" alt="{{ $file->name }}" class="img-preview">
+                                    @else
+                                        <i class="fas fa-file"></i>
+                                        <p>{{ $file->name }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
                         <div class="add-new-file">
                             <p class="add-file"><i class="fas fa-plus"></i><br>Add File</p>
                             <p class="up-to">( up to 5Mb )</p>

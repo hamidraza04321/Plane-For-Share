@@ -10,7 +10,7 @@
 		</div>
 		<div class="col-md-4 h-box">
 			<div class="number">2.</div>
-			<p><strong>Upload</strong> to AirForShare anything you want</p>
+			<p><strong>Upload</strong> to PlaneForShare anything you want</p>
 		</div>
 		<div class="col-md-4 h-box">
 			<div class="number">3.</div>

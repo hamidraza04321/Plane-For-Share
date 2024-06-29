@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UploadFileRequest;
+use Illuminate\Support\Facades\File as FileFacade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\Text;
+use App\Models\File;
 use App\Models\User;
 use Auth;
 
@@ -15,7 +19,8 @@ class HomeController extends Controller
     public function index()
     {
         $text = Text::where('ip', request()->ip())->first()?->text;
-        return view('index', compact('text'));
+        $files = File::where('ip', request()->ip())->get();
+        return view('index', compact('text', 'files'));
     }
 
     /**
@@ -37,14 +42,10 @@ class HomeController extends Controller
         );
 
         if ($saveText) {
-            return response()->json([
-                'message' => 'Text Saved Successfully !'
-            ]);
+            return response()->successMessage('Text Saved Successfully !');
         }
 
-        return response()->json([
-            'message' => 'Someting went wrong !'
-        ]);
+        return response()->errorMessage('Someting went wrong !');
     }
 
     /**
@@ -106,5 +107,32 @@ class HomeController extends Controller
         ]);
 
         return redirect()->route('login')->with([ 'message' => 'User Register Successfully !' ]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function upload(UploadFileRequest $request)
+    {
+        $fileName = Str::uuid() . '.' . $request->file->extension();
+
+        try {
+            $request->file->move(public_path('uploads'), $fileName);
+
+            $file = File::create([
+                'ip' => request()->ip(),
+                'name' => $request->file->getClientOriginalName(),
+                'source' => $fileName
+            ]);
+        } catch (\Exception $e) {
+            // If an error occurs, delete the moved file
+            if (FileFacade::exists(public_path('uploads') . '/' . $fileName)) {
+                FileFacade::delete(public_path('uploads') . '/' . $fileName);
+            }
+
+            return response()->errorMessage('Error on File Upload !');
+        }
+
+        return response()->success([ 'file' => $file ]);
     }
 }

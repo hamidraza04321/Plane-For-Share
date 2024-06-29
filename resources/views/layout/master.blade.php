@@ -12,7 +12,7 @@
     <!-- Fontawesome CSS -->
     <link rel="stylesheet" href="{{ url('assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ url('assets/dist/css/style.css') }}">
-    <title>Plane for share</title>
+    <title>Plane For Share</title>
 </head>
 <body>
     <section class="page-wrap">

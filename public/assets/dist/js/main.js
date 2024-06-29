@@ -110,6 +110,51 @@ $(document).ready(function() {
         handleFiles(files);
     });
 
+    // -------------- ON SUBMIT FORM FILE UPLOAD ------------- //
+    $(document).on('submit', '.upload-file-form', function(e){
+        e.preventDefault();
+        
+        var form = $(this);
+            formData = new FormData(form[0]);
+            url = baseUrl + '/upload';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                
+                // Upload progress
+                xhr.upload.addEventListener('progress', function(event) {
+                    if (event.lengthComputable) {
+                        var percentage = (event.loaded / event.total) * 100;
+                        updateProgress(percentage, form);
+                    }
+                }, false);
+                
+                return xhr;
+            },
+            success: function(response) {
+                if (response.status == true) {
+                    //
+                } else {
+                    //
+                }
+            },
+            error: function() {
+                //
+            },
+            complete: function() {
+                form.find('.file-loading').remove();
+            }
+        });
+    });
+
     // -------------- HANDLE FILES FUNCTION ------------- //
     function handleFiles(files) {
         if (files.length > 0) {
@@ -119,9 +164,13 @@ $(document).ready(function() {
 
             var fileDetails = ``;
             var readers = []; // To keep track of all FileReader instances
+            var uploadedFilesLength = $('.files-wrap .file').length;
 
             for (var i = 0; i < files.length; i++) {
+
                 var file = files[i];
+                    formDataId = (i + 1) + uploadedFilesLength;
+
                 if (file.type.startsWith('image/')) {
                     // For image files, create a URL and display the image
                     var reader = new FileReader();
@@ -131,54 +180,72 @@ $(document).ready(function() {
                         return function(e) {
                             $('.add-new-file').before(`
                                 <div class="file">
-                                    <div class="preview">
-                                        <img src="${e.target.result}" alt="${file.name}" class="img-preview">
-                                    </div>
-                                    <div class="file-loading">
-                                        <div class="file-progress-bar">
-                                            <svg viewBox="0 0 100 100" class="progress-container">
-                                                <circle cx="50" cy="50" r="40" class="progress-background"/>
-                                                <circle cx="50" cy="50" r="40" class="progress-bar"/>
-                                                <text x="50" y="50" class="progress-text">0%</text>
-                                            </svg>
+                                    <form data-id="${formDataId}" class="upload-file-form">
+                                        <input type="file" name="file" class="d-none">
+                                        <div class="preview">
+                                            <img src="${e.target.result}" alt="${file.name}" class="img-preview">
                                         </div>
-                                    </div>
+                                        <div class="file-loading">
+                                            <div class="file-progress-bar">
+                                                <svg viewBox="0 0 100 100" class="progress-container">
+                                                    <circle cx="50" cy="50" r="40" class="progress-background"/>
+                                                    <circle cx="50" cy="50" r="40" class="progress-bar"/>
+                                                    <text x="50" y="50" class="progress-text">0%</text>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             `);
+
+                            var form = $('.upload-file-form[data-id="'+formDataId+'"]');
+                            var dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            form.find('input[type="file"]')[0].files = dataTransfer.files;
+                            form.submit();
                         };
                     })(file);
                     reader.readAsDataURL(file);
                 } else {
                     $('.add-new-file').before(`
                         <div class="file">
-                            <div class="preview">
-                                <i class="fas fa-file"></i>
-                                <p>${file.name}</p>
-                            </div>
-                            <div class="file-loading">
-                                <div class="file-progress-bar">
-                                    <svg viewBox="0 0 100 100" class="progress-container">
-                                        <circle cx="50" cy="50" r="40" class="progress-background"/>
-                                        <circle cx="50" cy="50" r="40" class="progress-bar"/>
-                                        <text x="50" y="50" class="progress-text">0%</text>
-                                    </svg>
+                            <form data-id="${formDataId}" class="upload-file-form">
+                                <input type="file" name="file" class="d-none">
+                                <div class="preview">
+                                    <i class="fas fa-file"></i>
+                                    <p>${file.name}</p>
                                 </div>
-                            </div>
+                                <div class="file-loading">
+                                    <div class="file-progress-bar">
+                                        <svg viewBox="0 0 100 100" class="progress-container">
+                                            <circle cx="50" cy="50" r="40" class="progress-background"/>
+                                            <circle cx="50" cy="50" r="40" class="progress-bar"/>
+                                            <text x="50" y="50" class="progress-text">0%</text>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     `);
+
+                    var form = $('.upload-file-form[data-id="'+formDataId+'"]');
+                    var dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    form.find('input[type="file"]')[0].files = dataTransfer.files;
+                    form.submit();
                 }
             }
         }
     }
 
-    function updateProgress(percent) {
-        const progressBar = $('.progress-bar'); // Select the jQuery object directly
+    function updateProgress(percent, form) {
+        const progressBar = form.find('.progress-bar'); // Select the jQuery object directly
         const circumference = 2 * Math.PI * parseFloat(progressBar.attr('r'));
         const offset = circumference * (1 - percent / 100); // Calculate offset from top center
         
         progressBar.css('strokeDasharray', `${circumference} ${circumference}`);
         progressBar.css('strokeDashoffset', offset);
         
-        $('.progress-text').text(`${percent}%`);
+        form.find('.progress-text').text(`${percent.toFixed(0)}%`);
     }
 });
