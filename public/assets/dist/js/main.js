@@ -129,37 +129,56 @@ $(document).ready(function() {
 
                     reader.onload = (function(file) {
                         return function(e) {
-                            fileDetails += `<div class="file">
-                                <div class="preview">
-                                    <img src="${e.target.result}" alt="${file.name}" class="img-preview">
+                            $('.add-new-file').before(`
+                                <div class="file">
+                                    <div class="preview">
+                                        <img src="${e.target.result}" alt="${file.name}" class="img-preview">
+                                    </div>
+                                    <div class="file-loading">
+                                        <div class="file-progress-bar">
+                                            <svg viewBox="0 0 100 100" class="progress-container">
+                                                <circle cx="50" cy="50" r="40" class="progress-background"/>
+                                                <circle cx="50" cy="50" r="40" class="progress-bar"/>
+                                                <text x="50" y="50" class="progress-text">0%</text>
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>`;
-                            // Check if all readers are done before updating the DOM
-                            checkAllReadersDone();
+                            `);
                         };
                     })(file);
                     reader.readAsDataURL(file);
                 } else {
-                    // For non-image files, display the file name
-                    fileDetails += `<div class="file">
-                        <div class="preview">
-                            <i class="fas fa-file"></i>
-                            <p>${file.name}</p>
+                    $('.add-new-file').before(`
+                        <div class="file">
+                            <div class="preview">
+                                <i class="fas fa-file"></i>
+                                <p>${file.name}</p>
+                            </div>
+                            <div class="file-loading">
+                                <div class="file-progress-bar">
+                                    <svg viewBox="0 0 100 100" class="progress-container">
+                                        <circle cx="50" cy="50" r="40" class="progress-background"/>
+                                        <circle cx="50" cy="50" r="40" class="progress-bar"/>
+                                        <text x="50" y="50" class="progress-text">0%</text>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
-                    </div>`;
-                }
-            }
-
-            // If there are no image files, directly update the DOM
-            if (readers.length === 0) {
-                $('.add-new-file').before(fileDetails);
-            }
-
-            function checkAllReadersDone() {
-                if (readers.every(function(reader) { return reader.readyState === 2; })) {
-                    $('.add-new-file').before(fileDetails);
+                    `);
                 }
             }
         }
+    }
+
+    function updateProgress(percent) {
+        const progressBar = $('.progress-bar'); // Select the jQuery object directly
+        const circumference = 2 * Math.PI * parseFloat(progressBar.attr('r'));
+        const offset = circumference * (1 - percent / 100); // Calculate offset from top center
+        
+        progressBar.css('strokeDasharray', `${circumference} ${circumference}`);
+        progressBar.css('strokeDashoffset', offset);
+        
+        $('.progress-text').text(`${percent}%`);
     }
 });

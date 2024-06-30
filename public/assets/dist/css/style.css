@@ -378,13 +378,14 @@ header nav ul li a:hover {
 }
 
 .file {
+    position: relative;
     border: 1px solid #60a5fa;
     width: 120px;
     height: 140px;
     padding: 3px;
     margin: 5px;
     background: #1e293b;
-    overflow-y: hidden;
+    overflow: hidden;
     cursor: pointer;
 }
 
@@ -423,6 +424,7 @@ header nav ul li a:hover {
 
 .preview {
     overflow: hidden;
+    height: 100%;
 }
 
 i.fa-plus {
@@ -448,6 +450,58 @@ i.fa-plus {
     text-align: center;
     width: 100%;
     margin: 20px 0px;
+}
+
+.file-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0.7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.file-progress-bar {
+    /*width: 100px;
+    height: 100px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden; /* Ensure the progress bar stays within the circle */*/
+}
+
+.progress-container {
+    position: relative;
+    width: 120px; /* Adjust width as needed */
+    height: 120px; /* Adjust height as needed */
+}
+
+.progress-background {
+    fill: none;
+    stroke-width: 3; /* Thickness of the progress bar */
+}
+
+.progress-bar {
+    fill: none;
+    stroke: #fff; /* Progress color */
+    stroke-width: 3; /* Thickness of the progress bar */
+    stroke-linecap: round; /* Rounded line ends */
+    stroke-dasharray: 0, 1000; /* Length of the stroke dasharray */
+    transition: stroke-dasharray 0.5s ease; /* Animation transition */
+    transform: rotate(-90deg); /* Rotate so it starts from the top center */
+    transform-origin: 50% 50%; /* Rotate around the center */
+}
+
+.progress-text {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    fill: #fff; /* Text color */
+    text-anchor: middle; /* Center text horizontally */
+    dominant-baseline: central; /* Center text vertically */
 }
 
 .margin-wrap {
