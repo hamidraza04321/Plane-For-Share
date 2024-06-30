@@ -28,10 +28,13 @@
                     </div>
                     <div @class([ 'files-wrap', 'd-none' => $files->isEmpty() ])>
                         @foreach($files as $file)
-                            <div class="file">
+                            @php 
+                                $isImage = @getimagesize(url('/uploads/' . $file->source)) !== false; 
+                            @endphp
+                            <div @class([ 'file', 'complete', 'no-image' => !$isImage ]) data-src="{{ $file->source }}">
                                 <div class="preview">
-                                    @if(@getimagesize(url('/uploads/' . $file->name)) !== false)
-                                        <img src="{{ url('/uploads/' . $file->name) }}" alt="{{ $file->name }}" class="img-preview">
+                                    @if($isImage)
+                                        <img src="{{ url('/uploads/' . $file->source) }}" alt="{{ $file->name }}" class="img-preview">
                                     @else
                                         <i class="fas fa-file"></i>
                                         <p>{{ $file->name }}</p>

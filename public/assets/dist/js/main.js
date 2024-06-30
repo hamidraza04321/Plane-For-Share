@@ -86,7 +86,7 @@ $(document).ready(function() {
     });
 
     // -------------- ON DRAG OVER ------------- //
-    $('.drag-drop-wrap').on('dragover', function(e) {
+    $(document).on('dragover', '.drag-drop-wrap', function(e) {
         e.preventDefault();
         e.stopPropagation();
         if (!$('.file').length) {
@@ -95,19 +95,36 @@ $(document).ready(function() {
     });
 
     // -------------- ON DRAG LEAVE ------------- //
-    $('.drag-drop-wrap').on('dragleave', function(e) {
+    $(document).on('dragleave', '.drag-drop-wrap', function(e) {
         e.preventDefault();
         e.stopPropagation();
         $(this).removeClass('drag-over');
     });
 
     // -------------- ON DROP ------------- //
-    $('.drag-drop-wrap').on('drop', function(e) {
+    $(document).on('drop', '.drag-drop-wrap', function(e) {
         e.preventDefault();
         e.stopPropagation();
         $(this).removeClass('drag-over');
         var files = e.originalEvent.dataTransfer.files;
         handleFiles(files);
+    });
+
+    // -------------- ON CLICK ON FILE ------------- //
+    $(document).on('click', '.file', function(e){
+        e.preventDefault();
+
+        var source = $(this).attr('data-src');
+
+        if (source) {
+            const url = baseUrl + '/uploads/' + source;
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = url.split('/').pop(); // This sets the file name
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     });
 
     // -------------- ON SUBMIT FORM FILE UPLOAD ------------- //
@@ -141,16 +158,28 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.status == true) {
-                    //
+                    form.parent('.file').addClass('complete');
+                    form.parent('.file').attr('data-src', response.file.source);
+                    form.find('.file-loading').remove();
                 } else {
-                    //
+                    form.find('.file-loading').html(`
+                        <div class="file-error">
+                            <i class="fas fa-warning"></i>
+                            <p>Uploading Failed</p>
+                        </div>
+                    `);
                 }
             },
             error: function() {
-                //
+                form.find('.file-loading').html(`
+                    <div class="file-error">
+                        <i class="fas fa-warning"></i>
+                        <p>Uploading Failed</p>
+                    </div>
+                `);
             },
             complete: function() {
-                form.find('.file-loading').remove();
+                //
             }
         });
     });
@@ -208,7 +237,7 @@ $(document).ready(function() {
                     reader.readAsDataURL(file);
                 } else {
                     $('.add-new-file').before(`
-                        <div class="file">
+                        <div class="file no-image">
                             <form data-id="${formDataId}" class="upload-file-form">
                                 <input type="file" name="file" class="d-none">
                                 <div class="preview">

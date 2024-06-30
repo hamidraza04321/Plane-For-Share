@@ -465,15 +465,6 @@ i.fa-plus {
     align-items: center;
 }
 
-.file-progress-bar {
-    /*width: 100px;
-    height: 100px;
-    border: 2px solid #fff;
-    border-radius: 50%;
-    position: relative;
-    overflow: hidden; /* Ensure the progress bar stays within the circle */*/
-}
-
 .progress-container {
     position: relative;
     width: 120px; /* Adjust width as needed */
@@ -502,6 +493,26 @@ i.fa-plus {
     fill: #fff; /* Text color */
     text-anchor: middle; /* Center text horizontally */
     dominant-baseline: central; /* Center text vertically */
+}
+
+.file-error {
+    text-align: center;
+    font-weight: bold;
+}
+
+.file-error i {
+    font-size: 35px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.file-error p {
+    line-height: 25px;
+    padding: 0px 5px;
+}
+
+.file.complete.no-image:hover {
+    opacity: .7;
 }
 
 .margin-wrap {

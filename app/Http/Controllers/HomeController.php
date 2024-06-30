@@ -130,9 +130,15 @@ class HomeController extends Controller
                 FileFacade::delete(public_path('uploads') . '/' . $fileName);
             }
 
-            return response()->errorMessage('Error on File Upload !');
+            return response()->errorMessage('Uploading Failed !');
         }
 
-        return response()->success([ 'file' => $file ]);
+        return response()->success([
+            'file' => [
+                'id' => $file->id,
+                'name' => $file->name,
+                'source' => $file->source
+            ]
+        ]);
     }
 }
