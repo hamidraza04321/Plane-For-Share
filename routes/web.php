@@ -19,9 +19,16 @@ Route::controller(HomeController::class)->group(function(){
 	Route::get('/', 'index')->name('index');
 	Route::get('/how-it-works', 'howItWorks')->name('how.it.works');
 	Route::post('/save-text', 'saveText')->name('save.text');
+});
+
+Route::controller(AuthController::class)->group(function(){
 	Route::get('/login', 'login')->name('login');
 	Route::get('/register', 'register')->name('register');
-	Route::post('/authenticate', 'authenticate')->name('authenticate');
+	Route::post('/signin', 'signin')->name('signin');
 	Route::post('/signup', 'signup')->name('signup');
-	Route::post('/upload', 'upload')->name('file.upload');
+});
+
+Route::controller(FileController::class)->group(function(){
+	Route::post('/file/upload', 'upload')->name('file.upload');
+	Route::delete('/file/delete/{id}', 'delete')->name('file.delete');
 });

@@ -130,6 +130,7 @@ $(document).ready(function() {
     // -------------- ON HOVER COMPLETED UPLOAD FILE ------------- //
     $(document).on('mouseover', '.file.complete', function(e){
         e.preventDefault();
+        var fileId = $(this).attr('data-file-id');
         if (!$(this).find('.btn-wrap').length) {
             $(this).append(`
                 <div class="btn-wrap">
@@ -152,25 +153,34 @@ $(document).ready(function() {
     // -------------- ON CLICK DELETE FILE ------------- //
     $(document).on('click', '#btn-delete-file', function(e){
         e.preventDefault();
-        
-        if (confirm('Are you sure you want to delete the file ?')) {
-            var self = $(this);
-                url = baseUrl + '/remove-file';
 
-            // $.ajax({
-            //     url: url,
-            //     type: 'POST',
-            //     data: {},
-            //     success: function(response) {
-                    
-            //     },
-            //     error: function() {
-            //         //
-            //     },
-            //     complete: function() {
-            //         //
-            //     }
-            // });
+        var self = $(this);
+            fileId = $(this).parents('.file').attr('data-file-id');
+            file = self.parents('.file');
+            url = baseUrl + '/file/delete/' + fileId;
+
+        if (confirm('Are you sure you want to delete the file ?')) {
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                success: function(response) {
+                    if (response.status == true) {
+                        file.remove();
+                        toastr.success(response.message);
+
+                        if (!$('.files-wrap .file').length) {
+                            $('.files-wrap').addClass('d-none');
+                            $('.drag-drop-wrap').addClass('no-file');
+                            $('.no-file-upload-wrap').removeClass('d-none');
+                        }
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.success('Something went wrong !');
+                }
+            });
         }
     });
 
@@ -180,7 +190,7 @@ $(document).ready(function() {
         
         var form = $(this);
             formData = new FormData(form[0]);
-            url = baseUrl + '/upload';
+            url = baseUrl + '/file/upload';
 
         $.ajax({
             url: url,
@@ -206,6 +216,7 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status == true) {
                     form.parent('.file').addClass('complete');
+                    form.parent('.file').attr('data-file-id', response.file.id);
                     form.parent('.file').attr('data-src', response.file.source);
                     form.find('.file-loading').remove();
                 } else {

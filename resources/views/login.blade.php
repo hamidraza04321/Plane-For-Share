@@ -11,7 +11,7 @@
 				Invalid Credentials !
 			</div>
 		@endif
-		<form action="{{ route('authenticate') }}" method="POST" name="login_form" id="login-form">
+		<form action="{{ route('signin') }}" method="POST" name="signin_form" id="signin-form">
 			@csrf
 			<div class="form-group">
 				<input type="text" class="form-control custom-input" name="login" id="login" placeholder="Enter Username or Email" required>

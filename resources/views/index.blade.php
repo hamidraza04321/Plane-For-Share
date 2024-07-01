@@ -31,7 +31,7 @@
                             @php 
                                 $isImage = @getimagesize(url('/uploads/' . $file->source)) !== false; 
                             @endphp
-                            <div class="file complete" data-src="{{ $file->source }}">
+                            <div class="file complete" data-src="{{ $file->source }}" data-file-id="{{ $file->id }}">
                                 <div class="preview">
                                     @if($isImage)
                                         <img src="{{ url('/uploads/' . $file->source) }}" alt="{{ $file->name }}" class="img-preview">
