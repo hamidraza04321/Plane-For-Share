@@ -110,11 +110,11 @@ $(document).ready(function() {
         handleFiles(files);
     });
 
-    // -------------- ON CLICK ON FILE ------------- //
-    $(document).on('click', '.file', function(e){
+    // -------------- ON CLICK ON DOWNLOAD FILE ------------- //
+    $(document).on('click', '#btn-download-file', function(e){
         e.preventDefault();
 
-        var source = $(this).attr('data-src');
+        var source = $(this).parents('.file').attr('data-src');
 
         if (source) {
             const url = baseUrl + '/uploads/' + source;
@@ -124,6 +124,53 @@ $(document).ready(function() {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+    });
+
+    // -------------- ON HOVER COMPLETED UPLOAD FILE ------------- //
+    $(document).on('mouseover', '.file.complete', function(e){
+        e.preventDefault();
+        if (!$(this).find('.btn-wrap').length) {
+            $(this).append(`
+                <div class="btn-wrap">
+                    <div class="overlay"></div>
+                    <div class="btn-group">
+                        <button class="btn btn-sm" style="margin-right: 10px;background: #2564eb;color: #fff;" id="btn-download-file" title="Download"><i class="fas fa-download"></i></button>     
+                        <button class="btn btn-sm" id="btn-delete-file" style="color: #fff;background: red;" title="Delete"><i class="fas fa-trash"></i></button>     
+                    </div>
+                </div>
+            `);
+        }
+    });
+
+    // -------------- ON HOVER COMPLETED UPLOAD FILE ------------- //
+    $(document).on('mouseleave', '.file.complete', function(e){
+        e.preventDefault();
+        $(this).find('.btn-wrap').remove();
+    });
+
+    // -------------- ON CLICK DELETE FILE ------------- //
+    $(document).on('click', '#btn-delete-file', function(e){
+        e.preventDefault();
+        
+        if (confirm('Are you sure you want to delete the file ?')) {
+            var self = $(this);
+                url = baseUrl + '/remove-file';
+
+            // $.ajax({
+            //     url: url,
+            //     type: 'POST',
+            //     data: {},
+            //     success: function(response) {
+                    
+            //     },
+            //     error: function() {
+            //         //
+            //     },
+            //     complete: function() {
+            //         //
+            //     }
+            // });
         }
     });
 
@@ -185,86 +232,93 @@ $(document).ready(function() {
     });
 
     // -------------- HANDLE FILES FUNCTION ------------- //
-    function handleFiles(files) {
+    async function handleFiles(files) {
         if (files.length > 0) {
             $('.files-wrap').removeClass('d-none');
             $('.drag-drop-wrap').removeClass('no-file');
             $('.no-file-upload-wrap').addClass('d-none');
 
             var fileDetails = ``;
-            var readers = []; // To keep track of all FileReader instances
             var uploadedFilesLength = $('.files-wrap .file').length;
 
             for (var i = 0; i < files.length; i++) {
-
                 var file = files[i];
                     formDataId = (i + 1) + uploadedFilesLength;
 
                 if (file.type.startsWith('image/')) {
-                    // For image files, create a URL and display the image
-                    var reader = new FileReader();
-                    readers.push(reader); // Keep track of this reader
-
-                    reader.onload = (function(file) {
-                        return function(e) {
-                            $('.add-new-file').before(`
-                                <div class="file">
-                                    <form data-id="${formDataId}" class="upload-file-form">
-                                        <input type="file" name="file" class="d-none">
-                                        <div class="preview">
-                                            <img src="${e.target.result}" alt="${file.name}" class="img-preview">
-                                        </div>
-                                        <div class="file-loading">
-                                            <div class="file-progress-bar">
-                                                <svg viewBox="0 0 100 100" class="progress-container">
-                                                    <circle cx="50" cy="50" r="40" class="progress-background"/>
-                                                    <circle cx="50" cy="50" r="40" class="progress-bar"/>
-                                                    <text x="50" y="50" class="progress-text">0%</text>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            `);
-
-                            var form = $('.upload-file-form[data-id="'+formDataId+'"]');
-                            var dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(file);
-                            form.find('input[type="file"]')[0].files = dataTransfer.files;
-                            form.submit();
-                        };
-                    })(file);
-                    reader.readAsDataURL(file);
+                    await handleImageFile(file, formDataId);
                 } else {
-                    $('.add-new-file').before(`
-                        <div class="file no-image">
-                            <form data-id="${formDataId}" class="upload-file-form">
-                                <input type="file" name="file" class="d-none">
-                                <div class="preview">
-                                    <i class="fas fa-file"></i>
-                                    <p>${file.name}</p>
-                                </div>
-                                <div class="file-loading">
-                                    <div class="file-progress-bar">
-                                        <svg viewBox="0 0 100 100" class="progress-container">
-                                            <circle cx="50" cy="50" r="40" class="progress-background"/>
-                                            <circle cx="50" cy="50" r="40" class="progress-bar"/>
-                                            <text x="50" y="50" class="progress-text">0%</text>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    `);
-
-                    var form = $('.upload-file-form[data-id="'+formDataId+'"]');
-                    var dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    form.find('input[type="file"]')[0].files = dataTransfer.files;
-                    form.submit();
+                    await handleNonImageFile(file, formDataId);
                 }
             }
         }
+    }
+
+    function handleImageFile(file, formDataId)
+    {
+        // For image files, create a URL and display the image
+        var reader = new FileReader();
+
+        reader.onload = (function(file) {
+            return function(e) {
+                $('.add-new-file').before(`
+                    <div class="file">
+                        <form data-id="${formDataId}" class="upload-file-form">
+                            <input type="file" name="file" class="d-none">
+                            <div class="preview">
+                                <img src="${e.target.result}" alt="${file.name}" class="img-preview">
+                            </div>
+                            <div class="file-loading">
+                                <div class="file-progress-bar">
+                                    <svg viewBox="0 0 100 100" class="progress-container">
+                                        <circle cx="50" cy="50" r="40" class="progress-background"/>
+                                        <circle cx="50" cy="50" r="40" class="progress-bar"/>
+                                        <text x="50" y="50" class="progress-text">0%</text>
+                                    </svg>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                `);
+
+                var form = $('.upload-file-form[data-id="'+formDataId+'"]');
+                var dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                form.find('input[type="file"]')[0].files = dataTransfer.files;
+                form.submit();
+            };
+        })(file);
+        reader.readAsDataURL(file);
+    }
+
+    function handleNonImageFile(file, formDataId)
+    {
+        $('.add-new-file').before(`
+            <div class="file">
+                <form data-id="${formDataId}" class="upload-file-form">
+                    <input type="file" name="file" class="d-none">
+                    <div class="preview">
+                        <i class="fas fa-file"></i>
+                        <p>${file.name}</p>
+                    </div>
+                    <div class="file-loading">
+                        <div class="file-progress-bar">
+                            <svg viewBox="0 0 100 100" class="progress-container">
+                                <circle cx="50" cy="50" r="40" class="progress-background"/>
+                                <circle cx="50" cy="50" r="40" class="progress-bar"/>
+                                <text x="50" y="50" class="progress-text">0%</text>
+                            </svg>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        `);
+
+        var form = $('.upload-file-form[data-id="'+formDataId+'"]');
+        var dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        form.find('input[type="file"]')[0].files = dataTransfer.files;
+        form.submit();
     }
 
     function updateProgress(percent, form) {
