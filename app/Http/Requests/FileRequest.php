@@ -4,8 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Traits\FailedValidationTrait;
+use Illuminate\Support\Facades\Route;
 
-class UploadFileRequest extends FormRequest
+class FileRequest extends FormRequest
 {
     use FailedValidationTrait;
 
@@ -24,8 +25,16 @@ class UploadFileRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'file' => 'required'       
-        ];
+        return match(Route::currentRouteName()) {
+            'file.upload' => $this->upload()
+        };
+    }
+
+    /**
+     * Upload file rules validation
+     */
+    public function upload()
+    {
+        return [ 'file' => 'required|file' ];
     }
 }

@@ -373,6 +373,10 @@ header nav ul li a:hover {
     display: none;
 }
 
+.drag-drop-wrap {
+    min-height: 350px;
+}
+
 .drag-drop-wrap.drag-over {
     border: 2px solid #60a5fa !important;
 }
@@ -511,7 +515,22 @@ i.fa-plus {
     padding: 0px 5px;
 }
 
-.file.complete.no-image:hover {
+.btn-wrap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: #000;
     opacity: .7;
 }
 
