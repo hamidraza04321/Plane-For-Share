@@ -582,3 +582,35 @@ i.fa-plus {
     height: 40px;
     width: 100%;
 }
+
+.btn-transparent {
+    float: right;
+    background: transparent;
+    color: #60a5fa;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    margin: 0px 15px;
+}
+
+.btn-transparent i {
+    margin-right: 3px;
+    font-size: large;
+}
+
+.btn-transparent:focus {
+    outline: none;
+    border: none;
+}
+
+.btn-transparent:hover {
+    text-decoration: underline;
+}
+
+.btn-files-wrap {
+    margin: 10px 0px;
+}
+
+.btn-red {
+    color: #ff485e !important;
+}

@@ -184,6 +184,23 @@ $(document).ready(function() {
         });
     });
 
+    // -------------- ON CLICK SELECT FILES ------------ //
+    $(document).on('click', '#btn-select-files', function(e) {
+        e.preventDefault();
+        
+        var self = $(this);
+            selfHtml = self.html();
+            action = self.data('action');
+
+        if (action == 'select') {
+            
+        }
+
+        if (action == 'cancel') {
+            //
+        }
+    });
+
     // -------------- HANDLE FILES FUNCTION ------------- //
     function handleFiles(files) {
         if (files.length > 0) {
