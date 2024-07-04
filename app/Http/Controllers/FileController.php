@@ -6,6 +6,7 @@ use App\Http\Requests\FileRequest;
 use Illuminate\Support\Facades\File as FileFacade;
 use Illuminate\Support\Str;
 use App\Models\File;
+use ZipArchive;
 
 class FileController extends Controller
 {
@@ -86,5 +87,38 @@ class FileController extends Controller
         // Delete records from database
         File::where('ip', request()->ip())->delete();
         return response()->successMessage('Files Deleted Successfully !');
+    }
+
+    /**
+     * Downlaod All files
+     */
+    public function downloadAll()
+    {
+        // Fetch the list of files based on IP address
+        $files = File::where('ip', request()->ip())->pluck('source')->toArray();
+
+        // Create a temporary file to store the zip archive
+        $zipFileName = 'files.zip';
+        $zipFilePath = public_path('uploads/' . $zipFileName);
+
+        // Initialize ZipArchive
+        $zip = new ZipArchive;
+
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            // Add each file to the zip archive
+            foreach ($files as $file) {
+                $filePath = public_path('uploads/' . $file);
+
+                if (file_exists($filePath)) {
+                    $zip->addFile($filePath, basename($file));
+                }
+            }
+            $zip->close();
+        } else {
+            return response()->json(['error' => 'Failed to create zip file'], 500);
+        }
+
+        // Prepare the response for downloading the zip file
+        return response()->download($zipFilePath)->deleteFileAfterSend(true);
     }
 }

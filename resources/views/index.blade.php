@@ -23,12 +23,15 @@
             <div class="tab-pane" id="2">
                 <div @class([ 'drag-drop-wrap', 'no-file' => $files->isEmpty() ])>
                     <div @class([ 'no-file-upload-wrap', 'd-none' => !$files->isEmpty() ])>
-                        <h4>Drag and drop any files up to 2 files, 5Mbs each or <a href="#" id="browse">Browse</a><br></h4>
+                        <h4>Drag and drop any files up to 10 files, 5Mbs each or <a href="#" id="browse">Browse</a><br></h4>
                         <h4><a href="#">Upgrade</a> to get more space</h4>
                     </div>
                     <div @class([ 'row', 'btn-files-row', 'd-none' => $files->isEmpty() ])>
                         <div class="col-md-12 text-right btn-files-wrap">
-                            <button class="btn-transparent"><i class="fas fa-download"></i>Download All</button>
+                            <form action="{{ route('file.download.all') }}" name="form_download_all_files" method="POST" target="_blank">
+                                @csrf
+                                <button class="btn-transparent" type="submit"><i class="fas fa-download"></i>Download All</button>
+                            </form>
                             <button class="btn-transparent btn-red" id="btn-delete-files" data-action="all"><i class="fas fa-trash"></i>Delete All</button>
                             <button class="btn-transparent" id="btn-select-files" data-action="select"><i class="fas fa-select"></i>Select</button>
                         </div>
