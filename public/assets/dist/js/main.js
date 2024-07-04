@@ -172,13 +172,14 @@ $(document).ready(function() {
                             $('.files-wrap').addClass('d-none');
                             $('.drag-drop-wrap').addClass('no-file');
                             $('.no-file-upload-wrap').removeClass('d-none');
+                            $('.btn-files-row').addClass('d-none');
                         }
                     } else {
                         toastr.error(response.message);
                     }
                 },
                 error: function() {
-                    toastr.success('Something went wrong !');
+                    toastr.error('Something went wrong !');
                 }
             });
         }
@@ -215,6 +216,7 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.status == true) {
+                    $('.btn-files-row').removeClass('d-none');
                     form.parent('.file').addClass('complete');
                     form.parent('.file').attr('data-file-id', response.file.id);
                     form.parent('.file').attr('data-src', response.file.source);
@@ -251,11 +253,55 @@ $(document).ready(function() {
             action = self.data('action');
 
         if (action == 'select') {
-            
+            //
         }
 
         if (action == 'cancel') {
             //
+        }
+    });
+
+    // --------------- ON CLICK DELETE ALL FILES ------------- //
+    $(document).on('click', '#btn-delete-files', function(e){
+        e.preventDefault();
+
+        var self = $(this);
+            selfHtml = self.html();
+            action = self.data('action');
+            message = action == 'all' ? 'Are you sure you want to delete all files ?' : 'Are you sure you want to delete selected files ?';
+            url = baseUrl + '/file/delete-all';
+
+        if (confirm(message)) {
+            $('#tabs').addClass('loading');
+            $('.tab-pane[id="2"]').append(`
+                <div class="loader">
+                    <div class="file-loader"></div>
+                </div>
+            `);
+
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                success: function(response) {
+                    if (response.status == true) {
+                        $('.file').remove();
+                        $('.files-wrap').addClass('d-none');
+                        $('.drag-drop-wrap').addClass('no-file');
+                        $('.no-file-upload-wrap').removeClass('d-none');
+                        $('.btn-files-row').addClass('d-none');
+                        toastr.success(response.message);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error('Something went wrong !');
+                },
+                complete: function() {
+                    $('#tabs').removeClass('loading');
+                    $('.loader').remove();
+                }
+            });
         }
     });
 
@@ -353,7 +399,7 @@ $(document).ready(function() {
         const progressBar = form.find('.progress-bar'); // Select the jQuery object directly
         const circumference = 2 * Math.PI * parseFloat(progressBar.attr('r'));
         const offset = circumference * (1 - percent / 100); // Calculate offset from top center
-        
+
         progressBar.css('strokeDasharray', `${circumference} ${circumference}`);
         progressBar.css('strokeDashoffset', offset);
         

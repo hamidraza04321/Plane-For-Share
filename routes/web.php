@@ -31,4 +31,5 @@ Route::controller(AuthController::class)->group(function(){
 Route::controller(FileController::class)->group(function(){
 	Route::post('/file/upload', 'upload')->name('file.upload');
 	Route::delete('/file/delete/{id}', 'delete')->name('file.delete');
+	Route::delete('/file/delete-all', 'deleteAll')->name('file.delete.all');
 });

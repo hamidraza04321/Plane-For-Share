@@ -57,7 +57,7 @@ class FileController extends Controller
 
             // Delete file if exists
             if (FileFacade::exists($filePath)) {
-                FileFacade::delete($filePath);     
+                FileFacade::delete($filePath);
             }
 
             $file->delete();
@@ -65,5 +65,26 @@ class FileController extends Controller
         }
 
         return response()->errorMessage('File not found !');
+    }
+
+    /**
+     * Delete all uploaded files
+     */
+    public function deleteAll()
+    {
+        $files = File::where('ip', request()->ip())->get();
+
+        foreach ($files as $file) {
+            $filePath = public_path('uploads/' . $file->source);
+
+            // Delete file if exists
+            if (FileFacade::exists($filePath)) {
+                FileFacade::delete($filePath);
+            }
+        }
+
+        // Delete records from database
+        File::where('ip', request()->ip())->delete();
+        return response()->successMessage('Files Deleted Successfully !');
     }
 }
