@@ -30,7 +30,7 @@
                         <div class="col-md-12 text-right btn-files-wrap">
                             <form action="{{ route('file.download.all') }}" name="form_download_all_files" method="POST" target="_blank">
                                 @csrf
-                                <button class="btn-transparent" type="submit"><i class="fas fa-download"></i>Download All</button>
+                                <button class="btn-transparent" type="submit" id="btn-download-files" data-action="all"><i class="fas fa-download"></i>Download All</button>
                             </form>
                             <button class="btn-transparent btn-red" id="btn-delete-files" data-action="all"><i class="fas fa-trash"></i>Delete All</button>
                             <button class="btn-transparent" id="btn-select-files" data-action="select"><i class="fas fa-select"></i>Select</button>

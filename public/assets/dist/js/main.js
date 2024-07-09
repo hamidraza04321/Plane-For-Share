@@ -131,7 +131,7 @@ $(document).ready(function() {
     $(document).on('mouseover', '.file.complete', function(e){
         e.preventDefault();
         var fileId = $(this).attr('data-file-id');
-        if (!$(this).find('.btn-wrap').length) {
+        if (!$(this).find('.btn-wrap').length && !$(this).hasClass('select')) {
             $(this).append(`
                 <div class="btn-wrap">
                     <div class="overlay"></div>
@@ -147,7 +147,10 @@ $(document).ready(function() {
     // -------------- ON HOVER COMPLETED UPLOAD FILE ------------- //
     $(document).on('mouseleave', '.file.complete', function(e){
         e.preventDefault();
-        $(this).find('.btn-wrap').remove();
+
+        if (!$(this).hasClass('select')) {
+            $(this).find('.btn-wrap').remove();
+        }
     });
 
     // -------------- ON CLICK DELETE FILE ------------- //
@@ -250,14 +253,32 @@ $(document).ready(function() {
         
         var self = $(this);
             selfHtml = self.html();
-            action = self.data('action');
+            action = self.attr('data-action');
 
         if (action == 'select') {
-            //
+            $('.file').addClass('select').append(`
+                <div class="btn-wrap">
+                    <div class="overlay"></div>
+                    <div class="btn-group">
+                        <input type="checkbox" class="select-file">
+                    </div>
+                </div>
+            `);
+
+            self.attr('data-action', 'cancel').text('Cancel');
+            $('#btn-download-files').html(`<i class="fas fa-download"></i>Download`).attr('data-action', 'selected');
+            $('#btn-delete-files').html(`<i class="fas fa-trash"></i>Delete`).attr('data-action', 'selected');
         }
 
         if (action == 'cancel') {
-            //
+            $('.file').each(function(){
+                $(this).removeClass('select');
+                $(this).find('.btn-wrap').remove();
+            });
+
+            self.attr('data-action', 'select').text('Select');
+            $('#btn-download-files').html(`<i class="fas fa-download"></i>Download All`).attr('data-action', 'all');
+            $('#btn-delete-files').html(`<i class="fas fa-trash"></i>Delete All`).attr('data-action', 'all');
         }
     });
 
@@ -267,7 +288,7 @@ $(document).ready(function() {
 
         var self = $(this);
             selfHtml = self.html();
-            action = self.data('action');
+            action = self.attr('data-action');
             message = action == 'all' ? 'Are you sure you want to delete all files ?' : 'Are you sure you want to delete selected files ?';
             url = baseUrl + '/file/delete-all';
 
